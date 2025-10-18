@@ -1,11 +1,15 @@
 import React from 'react';
 import {Contacts} from "./components";
+import { Provider } from 'react-redux';
+import store from "./store";
 
 function App() {
     return (
-        <div>
-            <Contacts/>
-        </div>
+        <Provider store={store}>
+            <div>
+                <Contacts/>
+            </div>
+        </Provider>
     );
 }
 
