@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Contacts.css";
-import contactsSlice from "../../slices/contacts";
+import {add, remove, update} from "../../slices/contacts";
 //import contactsInitialState from "../../data/contacts";
 import "../../store";
 import { useSelector, useDispatch } from "react-redux";
@@ -34,7 +34,7 @@ function Contacts() {
 
   let onAddClick = () => {
     console.log("Add button clicked"); 
-    dispatch(contactsSlice.actions.add({
+    dispatch(add({
       id: uuidv1(),
       firstName,
       lastName,
@@ -52,7 +52,7 @@ function Contacts() {
     {
       // proceed with delete
       console.log("Delete button clicked for id: ", contact.id);
-      dispatch(contactsSlice.actions.remove(contact));
+      dispatch(remove(contact));
     }
   };
   let onEditClick = (contact) => {
@@ -65,7 +65,7 @@ function Contacts() {
   };
 
   let onUpdateClick = () => {
-    dispatch(contactsSlice.actions.update({
+    dispatch(update({
       id: editid,
       firstName: editFirstName,
       lastName: editLastName,
