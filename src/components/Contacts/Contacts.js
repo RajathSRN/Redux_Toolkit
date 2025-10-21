@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Contacts.css";
-import {add, remove, update} from "../../slices/contacts";
+//import {add, remove, update} from "../../slices/contacts";
 //import contactsInitialState from "../../data/contacts";
 import "../../store";
 import { useSelector, useDispatch } from "react-redux";
 import { v1 as uuidv1 } from "uuid";
+import { addContactThunk, fetchContactsThunk, updateContactThunk, deleteContactThunk } from "../../thunks/contacts";
 
 function Contacts() {
   let contacts = useSelector((state) => state.contacts);
@@ -25,6 +26,11 @@ function Contacts() {
   //create dispatch function
   let dispatch = useDispatch();
 
+  useEffect(() => {
+    //dispatch fetch contacts thunk
+    dispatch(fetchContactsThunk());
+  }, [dispatch]);
+
   // form validity: all fields must have non-empty (trimmed) values
   const isFormValid =
     firstName.trim() !== "" &&
@@ -34,7 +40,7 @@ function Contacts() {
 
   let onAddClick = () => {
     console.log("Add button clicked"); 
-    dispatch(add({
+    dispatch(addContactThunk({
       id: uuidv1(),
       firstName,
       lastName,
@@ -52,7 +58,7 @@ function Contacts() {
     {
       // proceed with delete
       console.log("Delete button clicked for id: ", contact.id);
-      dispatch(remove(contact));
+      dispatch(deleteContactThunk(contact));
     }
   };
   let onEditClick = (contact) => {
@@ -65,7 +71,7 @@ function Contacts() {
   };
 
   let onUpdateClick = () => {
-    dispatch(update({
+    dispatch(updateContactThunk({
       id: editid,
       firstName: editFirstName,
       lastName: editLastName,
@@ -77,7 +83,10 @@ function Contacts() {
 
   return (
     <div className="container">
-      <h4 className="grid-header">Contacts</h4>
+      <h4 className="grid-header">Contacts
+        {contacts.status === 'pending'? <i className="fas fa-spinner fa-spin"></i> : null}
+        {contacts.status === 'rejected'? <span className="text-red">&nbsp;{contacts.error?.message}</span> : null}
+      </h4>
       <div className="box">
         <details>
           <summary>New Contact</summary>
@@ -109,7 +118,7 @@ function Contacts() {
                 </tr>
             </thead>
             <tbody>
-                {contacts.map((contact, index) => (
+                {contacts.data.map((contact, index) => (
                     <tr key={contact.id}>
                         <td>{index + 1}</td>
                         <td>{editid === contact.id ? <input type="text" placeholder="First Name" className="form-control" value={editFirstName} onChange={(e) => setEditFirstName(e.target.value)} /> : contact.firstName}</td>
